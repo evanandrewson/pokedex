@@ -1,0 +1,23 @@
+header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 90%;
+    margin: auto;
+    background-color: #CC0000
+}
+
+header img {
+    width: 12.5%;
+}
+
+h1 {
+    font-size: 3rem;
+    margin: 1rem;
+}
+
+@media (min-width: 960px) {
+    header {
+        width: 100%;
+    }
+}
