@@ -3,5 +3,6 @@
         "Pokedex",
         "pokebase",
         "venusaur"
-    ]
+    ],
+    "liveServer.settings.port": 5501
 }

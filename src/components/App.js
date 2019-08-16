@@ -2,6 +2,9 @@ import Component from './Component.js';
 import Header from './header.js';
 import Options from './Options.js';
 import PokemonList from './pokemonList.js';
+import Paging from './Paging.js';
+import { getPokedex } from '../services/pokedex-api.js';
+import hashStorage from '../services/hash-storage.js';
 
 class App extends Component {
     onRender(dom) {
@@ -14,18 +17,32 @@ class App extends Component {
         const optionsSection = dom.querySelector('.options-section');
         optionsSection.appendChild(optionsDOM);
 
-        const url = 'https://alchemy-pokedex.herokuapp.com/api/pokedex';
-        let pokemonListDOM;
-        let pokemonList;
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                pokemonList = new PokemonList({ pokemon : data });
-                pokemonListDOM = pokemonList.renderDOM();
-                const pokedex = dom.querySelector('.pokedex');
-                pokedex.appendChild(pokemonListDOM);
-            });
+        const paging = new Paging();
+        const pagingDOM = paging.renderDOM();
+        optionsSection.appendChild(pagingDOM);
 
+        let pokemonListDOM;
+        let pokemonList = new PokemonList({ pokemon: [] });
+        pokemonListDOM = pokemonList.renderDOM();
+        const pokedex = dom.querySelector('.pokedex');
+        pokedex.appendChild(pokemonListDOM);
+        function loadPokedex() {
+            const options = hashStorage.get();
+            getPokedex(options)
+                .then(data => {
+                    pokemonList.update({ pokemon : data.results.results });
+                    const totalCount = data.results.count;
+                    paging.update({
+                        totalCount,
+                        currentPage: +options.page
+                    });
+                });
+        }
+        loadPokedex();
+
+        window.addEventListener('hashchange', () => {
+            loadPokedex();
+        });
     }
     renderHTML() {
         return /*html*/`
